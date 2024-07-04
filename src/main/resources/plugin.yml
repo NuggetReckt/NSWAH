@@ -1,0 +1,13 @@
+name: AuctionHouse
+version: '${project.version}'
+author: NuggetReckt
+prefix: AuctionHouse
+website: https://play.noskillworld.fr
+main: fr.nuggetreckt.nswah.AuctionHouse
+api-version: 1.20
+depend: [Vault]
+commands:
+  hdv:
+    description: Commande principale pour l'Hôtel des ventes
+    usage: "/hdv"
+    aliases: [ auctionhouse, ah ]
