@@ -4,6 +4,8 @@ import fr.noskillworld.api.utils.Credentials;
 import fr.nuggetreckt.nswah.auction.AuctionHandler;
 import fr.nuggetreckt.nswah.command.AuctionHouseCommand;
 import fr.nuggetreckt.nswah.database.DatabaseManager;
+import fr.nuggetreckt.nswah.gui.GuiManager;
+import fr.nuggetreckt.nswah.listener.OnInvClickListener;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -18,6 +20,7 @@ public class AuctionHouse extends JavaPlugin {
     private static AuctionHouse instance;
 
     private final DatabaseManager databaseManager;
+    private final GuiManager guiManager;
     private final AuctionHandler auctionHandler;
 
     private final Logger logger;
@@ -28,6 +31,7 @@ public class AuctionHouse extends JavaPlugin {
         logger = Logger.getLogger("Minecraft");
 
         databaseManager = new DatabaseManager(this, getCredentials());
+        guiManager = new GuiManager(this);
         auctionHandler = new AuctionHandler(this);
     }
 
@@ -37,7 +41,10 @@ public class AuctionHouse extends JavaPlugin {
         databaseManager.getRequestSender().createAuctionsTable();
 
         //Register commands
-        Objects.requireNonNull(this.getCommand("hdv")).setExecutor(new AuctionHouseCommand());
+        Objects.requireNonNull(this.getCommand("hdv")).setExecutor(new AuctionHouseCommand(this));
+
+        //Register events
+        getServer().getPluginManager().registerEvents(new OnInvClickListener(this), this);
 
         logger.info(String.format("[%s] Plugin loaded successfully", getDescription().getName()));
     }
@@ -59,6 +66,10 @@ public class AuctionHouse extends JavaPlugin {
 
     public DatabaseManager getDatabaseManager() {
         return this.databaseManager;
+    }
+
+    public GuiManager getGuiManager() {
+        return this.guiManager;
     }
 
     public AuctionHandler getAuctionHandler() {

@@ -1,6 +1,8 @@
 package fr.nuggetreckt.nswah.database;
 
 public enum Queries {
+    INSERT_AUCTION_ITEM("INSERT INTO auction_items (sellerUUID, sellerName, price, itemData) VALUES (?, ?, ?, ?);"),
+    RETRIEVE_AUCTION_ITEMS("SELECT * FROM auction_items;"),
 
     //Create table req
     CREATE_AUCTIONS_TABLE("""
@@ -9,12 +11,11 @@ public enum Queries {
                 id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
                 sellerUUID VARCHAR(36) NOT NULL,
                 sellerName VARCHAR(50) NOT NULL,
-                price BIGINT,
+                price BIGINT NOT NULL,
                 date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                itemData TEXT NOT NULL
+                itemData BLOB NOT NULL
             );
-            """)
-    ;
+            """);
 
     private final String query;
 
