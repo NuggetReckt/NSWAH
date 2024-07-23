@@ -16,8 +16,6 @@ public class OnInvClickListener implements Listener {
 
     private final AuctionHouse instance;
 
-    private Inventory inventory;
-
     public OnInvClickListener(AuctionHouse instance) {
         this.instance = instance;
     }
@@ -25,7 +23,7 @@ public class OnInvClickListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onClick(@NotNull InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
-        inventory = event.getClickedInventory();
+        Inventory inventory = event.getClickedInventory();
         InventoryView inventoryView = event.getView();
         ItemStack currentItem = event.getCurrentItem();
         int slot = event.getSlot();

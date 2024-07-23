@@ -11,7 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class RequestSender {
@@ -46,7 +47,7 @@ public class RequestSender {
         }
     }
 
-    public HashMap<Integer, AuctionItem> getAuctionItems() {
+    public List<AuctionItem> getAuctionItems() {
         requestsHandler = instance.getDatabaseManager().getRequestHandler();
 
         InputStream inputStream;
@@ -54,19 +55,17 @@ public class RequestSender {
         long itemPrice;
         UUID playerUUID;
         ItemStack item;
-        HashMap<Integer, AuctionItem> result = new HashMap<>();
+        List<AuctionItem> result = new ArrayList<>();
 
         requestsHandler.retrieveData(Queries.RETRIEVE_AUCTION_ITEMS.getQuery());
         try {
             while (requestsHandler.resultSet.next()) {
-                System.out.println("DEBUG");
                 inputStream = requestsHandler.resultSet.getBlob("itemData").getBinaryStream();
-                System.out.println("DEBUG: " + inputStream);
                 itemId = requestsHandler.resultSet.getInt("id");
                 itemPrice = requestsHandler.resultSet.getLong("price");
                 playerUUID = UUID.fromString(requestsHandler.resultSet.getString("sellerUUID"));
                 item = instance.getAuctionHandler().deserializeItem(inputStream);
-                result.put(itemId, new AuctionItem(item, instance.getAuctionHandler().getCategoryTypeByItem(item), itemPrice, Bukkit.getPlayer(playerUUID)));
+                result.add(new AuctionItem(itemId, item, instance.getAuctionHandler().getCategoryTypeByItem(item), itemPrice, Bukkit.getPlayer(playerUUID)));
             }
         } catch (SQLException e) {
             instance.getLogger().severe("SQLException: " + e.getMessage());

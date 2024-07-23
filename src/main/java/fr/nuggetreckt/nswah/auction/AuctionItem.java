@@ -5,16 +5,22 @@ import org.bukkit.inventory.ItemStack;
 
 public class AuctionItem {
 
+    private final int id;
     private long price;
     private final ItemStack item;
     private final CategoryType categoryType;
     private final Player seller;
 
-    public AuctionItem(ItemStack item, CategoryType type, long price, Player seller) {
-        this.price = price;
+    public AuctionItem(int id, ItemStack item, CategoryType type, long price, Player seller) {
+        this.id = id;
         this.item = item;
         this.categoryType = type;
+        this.price = price;
         this.seller = seller;
+    }
+
+    public int getId() {
+        return this.id;
     }
 
     public long getPrice() {

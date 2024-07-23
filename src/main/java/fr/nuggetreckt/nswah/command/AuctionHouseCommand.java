@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
+import java.util.List;
 
 public class AuctionHouseCommand implements CommandExecutor {
 
@@ -24,24 +24,24 @@ public class AuctionHouseCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         if (commandSender instanceof Player player) {
-            if (args.length > 0) {
-                if (args[0].equalsIgnoreCase("test")) {
-                    ItemStack item = player.getInventory().getItemInMainHand();
-                    AuctionItem auctionItem = new AuctionItem(item, instance.getAuctionHandler().getCategoryTypeByItem(item), Integer.parseInt(args[1]), player);
-                    instance.getDatabaseManager().getRequestSender().insertAuctionItem(auctionItem);
-                    player.getInventory().getItemInMainHand().setType(Material.AIR);
-                } else if (args[0].equalsIgnoreCase("test2")) {
-                    HashMap<Integer, AuctionItem> auctionItems = instance.getDatabaseManager().getRequestSender().getAuctionItems();
+            if (args.length == 0) {
+                instance.getGuiManager().open(player, AuctionHouseGUI.class);
+                return true;
+            }
+            if (args[0].equalsIgnoreCase("test")) {
+                ItemStack item = player.getInventory().getItemInMainHand();
+                AuctionItem auctionItem = new AuctionItem(0, item, instance.getAuctionHandler().getCategoryTypeByItem(item), Integer.parseInt(args[1]), player);
+                instance.getDatabaseManager().getRequestSender().insertAuctionItem(auctionItem);
+                player.getInventory().getItemInMainHand().setType(Material.AIR);
+            } else if (args[0].equalsIgnoreCase("test2")) {
+                List<AuctionItem> auctionItems = instance.getDatabaseManager().getRequestSender().getAuctionItems();
 
-                    for (AuctionItem item : auctionItems.values()) {
-                        player.sendMessage("DEBUG: item = " + item.getItem().getType());
-                        player.sendMessage("DEBUG: seller = " + item.getSeller());
-                        player.sendMessage("DEBUG: price = " + item.getPrice());
+                for (AuctionItem item : auctionItems) {
+                    player.sendMessage("DEBUG: item = " + item.getItem().getType());
+                    player.sendMessage("DEBUG: seller = " + item.getSeller());
+                    player.sendMessage("DEBUG: price = " + item.getPrice());
 
-                        player.getInventory().addItem(item.getItem());
-                    }
-                } else if (args[0].equalsIgnoreCase("test3")) {
-                    instance.getGuiManager().open(player, AuctionHouseGUI.class);
+                    player.getInventory().addItem(item.getItem());
                 }
             }
         }

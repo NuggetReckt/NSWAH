@@ -7,27 +7,28 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AuctionHandler {
 
     private final AuctionHouse instance;
 
-    public final HashMap<Integer, AuctionItem> auctionItems;
-
     public AuctionHandler(AuctionHouse instance) {
         this.instance = instance;
-        this.auctionItems = new HashMap<>();
     }
 
-    public HashMap<Integer, AuctionItem> getAuctionItemsByCategory(CategoryType category) {
-        HashMap<Integer, AuctionItem> items = new HashMap<>();
-        AuctionItem auctionItem;
+    public List<AuctionItem> getAuctionItems() {
+        return instance.getDatabaseManager().getRequestSender().getAuctionItems();
+    }
 
-        for (int key : auctionItems.keySet()) {
-            auctionItem = auctionItems.get(key);
+    public List<AuctionItem> getAuctionItemsByCategory(CategoryType category) {
+        List<AuctionItem> auctionItems = getAuctionItems();
+        List<AuctionItem> items = new ArrayList<>();
+
+        for (AuctionItem auctionItem : auctionItems) {
             if (auctionItem.getCategory().equals(category)) {
-                items.put(key, auctionItem);
+                items.add(auctionItem);
             }
         }
         return items;
