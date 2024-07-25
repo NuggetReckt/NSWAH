@@ -4,10 +4,14 @@ import fr.nuggetreckt.nswah.AuctionHouse;
 import fr.nuggetreckt.nswah.auction.AuctionItem;
 import fr.nuggetreckt.nswah.gui.CustomInventory;
 import fr.nuggetreckt.nswah.util.ItemUtils;
+import fr.nuggetreckt.nswah.util.MessageManager;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -22,6 +26,8 @@ public class AuctionHouseGUI implements CustomInventory {
     private final HashMap<Player, Integer> currentPage;
     private final HashMap<Integer, AuctionItem> auctionItems;
     private final int maxPerPage;
+
+    private int pageCount = 1;
 
     public AuctionHouseGUI(AuctionHouse instance) {
         this.instance = instance;
@@ -46,14 +52,26 @@ public class AuctionHouseGUI implements CustomInventory {
         int slot = 0;
 
         setCurrentPage(player, 0, false);
-        setupAuctionItems();
+        setupAuctionItems(player);
 
         //AuctionItems
         for (AuctionItem auctionItem : auctionItems.values()) {
             ItemStack item = auctionItem.getItem();
 
-            assert item.getItemMeta() != null;
-            slots[slot] = new ItemUtils(item.getType()).setName(item.getItemMeta().getDisplayName()).setLore(" ", " §8| §fVendu par : §3" + auctionItem.getSeller().getName(), " §8| §fPrix : §3" + auctionItem.getPrice()).addEnchantments(item.getEnchantments()).toItemStack();
+            if (item.getItemMeta() instanceof Damageable damageable) {
+                slots[slot] = new ItemUtils(item.getType())
+                        .setName(item.getItemMeta().getDisplayName())
+                        .setLore(" ", " §8| §fVendu par : §3" + auctionItem.getSeller().getName(), " §8| §fPrix : §3" + auctionItem.getPrice())
+                        .addEnchantments(item.getEnchantments()).setDurability((short) damageable.getDamage())
+                        .toItemStack();
+            } else {
+                assert item.getItemMeta() != null;
+                slots[slot] = new ItemUtils(item.getType())
+                        .setName(item.getItemMeta().getDisplayName())
+                        .setLore(" ", " §8| §fVendu par : §3" + auctionItem.getSeller().getName(), " §8| §fPrix : §3" + auctionItem.getPrice())
+                        .addEnchantments(item.getEnchantments()).toItemStack();
+            }
+            slots[slot].setAmount(item.getAmount());
             slot++;
         }
 
@@ -63,8 +81,12 @@ public class AuctionHouseGUI implements CustomInventory {
         } else {
             slots[48] = new ItemUtils(Material.LIGHT_BLUE_STAINED_GLASS_PANE).setName(" ").toItemStack();
         }
+        if (currentPage.get(player) < pageCount - 1) {
+            slots[50] = new ItemUtils(Material.ARROW).setName("§8§l»§r §3Page suivante §8§l«").hideFlags().setLore(" ", "§8| §fAller à la page suivante").toItemStack();
+        } else {
+            slots[50] = new ItemUtils(Material.LIGHT_BLUE_STAINED_GLASS_PANE).setName(" ").toItemStack();
+        }
         slots[49] = new ItemUtils(Material.BARRIER).setName("§8§l»§r §3Fermer §8§l«").hideFlags().setLore(" ", "§8| §fFerme le menu").toItemStack();
-        slots[50] = new ItemUtils(Material.ARROW).setName("§8§l»§r §3Page suivante §8§l«").hideFlags().setLore(" ", "§8| §fAller à la page suivante").toItemStack();
         slots[53] = new ItemUtils(Material.SNOWBALL).setName("§8§l»§r §3Rafraîchir §8§l«").hideFlags().setLore(" ", "§8| §fActualise la page").toItemStack();
 
         //Placeholders
@@ -80,8 +102,14 @@ public class AuctionHouseGUI implements CustomInventory {
     @Override
     public void onClick(Player player, Inventory inventory, @NotNull ItemStack clickedItem, int slot, boolean isLeftClick) {
         switch (clickedItem.getType()) {
-            case BARRIER -> player.closeInventory();
-            case SNOWBALL -> instance.getGuiManager().refresh(player, this.getClass());
+            case BARRIER -> {
+                player.closeInventory();
+                player.playSound(player, Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, 1, 1);
+            }
+            case SNOWBALL -> {
+                instance.getGuiManager().refresh(player, this.getClass());
+                player.playSound(player, Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, 1, 1);
+            }
             case ARROW -> {
                 int newPage = currentPage.get(player);
 
@@ -92,11 +120,40 @@ public class AuctionHouseGUI implements CustomInventory {
                 }
                 setCurrentPage(player, newPage, true);
                 instance.getGuiManager().refresh(player, this.getClass());
+                player.playSound(player, Sound.ITEM_BOOK_PAGE_TURN, 1, 1);
             }
             default -> {
                 if (!isClickable(clickedItem)) return;
-                player.sendMessage("test");
-                //Do something
+                AuctionItem auctionItem = auctionItems.get(slot);
+                Economy economy = instance.getEconomy();
+
+                if (Objects.requireNonNull(auctionItem.getSeller().getName()).equalsIgnoreCase(player.getName())) {
+                    //TODO: panel gestion item
+                    System.out.println("DEBUG: Owner");
+                    return;
+                }
+                if (getItemCount(player) > 35) {
+                    player.sendMessage(MessageManager.NO_INVENTORY_ROOM.getMessage());
+                    return;
+                }
+                if (economy.getBalance(player) < auctionItem.getPrice()) {
+                    player.sendMessage(MessageManager.NO_ENOUGH_MONEY.getMessage());
+                    return;
+                }
+                instance.getDatabaseManager().getRequestSender().deleteAuctionItem(auctionItem);
+                auctionItems.remove(slot);
+                player.getInventory().addItem(auctionItem.getItem());
+                economy.withdrawPlayer(player, auctionItem.getPrice());
+                economy.depositPlayer(auctionItem.getSeller(), auctionItem.getPrice());
+                player.sendMessage(String.format(MessageManager.PAYMENT_SUCCESS.getMessage(), auctionItem.getPrice(), auctionItem.getSeller().getName()));
+                player.playSound(player, Sound.BLOCK_NOTE_BLOCK_HARP, 1, 5);
+                player.closeInventory();
+
+                if (auctionItem.getSeller().isOnline()) {
+                    Player target = (Player) auctionItem.getSeller();
+                    target.sendMessage(String.format(MessageManager.PAYMENT_RECEIVED.getMessage(), player.getName(), auctionItem.getPrice()));
+                    target.playSound(target, Sound.BLOCK_NOTE_BLOCK_HARP, 1, 5);
+                }
             }
         }
     }
@@ -114,18 +171,29 @@ public class AuctionHouseGUI implements CustomInventory {
         }
     }
 
-    private void setupAuctionItems() {
+    private void setupAuctionItems(Player player) {
         List<AuctionItem> items = instance.getAuctionHandler().getAuctionItems();
-        int slot = 0;
+        int slot;
+        int startIndex = currentPage.get(player) * maxPerPage;
+        int endIndex = Math.min(startIndex + maxPerPage, items.size());
 
-        if (!auctionItems.isEmpty()) {
-            auctionItems.clear();
+        auctionItems.clear();
+        pageCount = (int) Math.ceil((double) items.size() / maxPerPage);
+
+        for (int i = startIndex; i < endIndex; i++) {
+            slot = i - startIndex;
+            auctionItems.put(slot, items.get(i));
         }
-        //TODO: Items by page
-        for (AuctionItem item : items) {
-            if (slot >= maxPerPage) break;
-            auctionItems.put(slot, item);
-            slot++;
+    }
+
+    private int getItemCount(@NotNull Player player) {
+        int itemCount = 0;
+
+        for (ItemStack i : player.getInventory().getContents()) {
+            if (i != null && !i.getType().isAir()) {
+                itemCount++;
+            }
         }
+        return itemCount;
     }
 }

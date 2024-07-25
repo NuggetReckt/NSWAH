@@ -38,7 +38,7 @@ public class OnInvClickListener implements Listener {
                 });
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onInventoryDrag(@NotNull InventoryDragEvent event) {
         InventoryView inventoryView = event.getView();
 

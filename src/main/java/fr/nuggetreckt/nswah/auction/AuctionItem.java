@@ -1,6 +1,6 @@
 package fr.nuggetreckt.nswah.auction;
 
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 
 public class AuctionItem {
@@ -9,9 +9,9 @@ public class AuctionItem {
     private long price;
     private final ItemStack item;
     private final CategoryType categoryType;
-    private final Player seller;
+    private final OfflinePlayer seller;
 
-    public AuctionItem(int id, ItemStack item, CategoryType type, long price, Player seller) {
+    public AuctionItem(int id, ItemStack item, CategoryType type, long price, OfflinePlayer seller) {
         this.id = id;
         this.item = item;
         this.categoryType = type;
@@ -31,7 +31,7 @@ public class AuctionItem {
         return this.item;
     }
 
-    public Player getSeller() {
+    public OfflinePlayer getSeller() {
         return this.seller;
     }
 

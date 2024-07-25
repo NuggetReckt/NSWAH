@@ -65,7 +65,7 @@ public class RequestSender {
                 itemPrice = requestsHandler.resultSet.getLong("price");
                 playerUUID = UUID.fromString(requestsHandler.resultSet.getString("sellerUUID"));
                 item = instance.getAuctionHandler().deserializeItem(inputStream);
-                result.add(new AuctionItem(itemId, item, instance.getAuctionHandler().getCategoryTypeByItem(item), itemPrice, Bukkit.getPlayer(playerUUID)));
+                result.add(new AuctionItem(itemId, item, instance.getAuctionHandler().getCategoryTypeByItem(item), itemPrice, Bukkit.getOfflinePlayer(playerUUID)));
             }
         } catch (SQLException e) {
             instance.getLogger().severe("SQLException: " + e.getMessage());
@@ -77,6 +77,13 @@ public class RequestSender {
             requestsHandler.close();
         }
         return result;
+    }
+
+    public void deleteAuctionItem(@NotNull AuctionItem item) {
+        requestsHandler = instance.getDatabaseManager().getRequestHandler();
+
+        requestsHandler.updateData(String.format(Queries.DELETE_AUCTION_ITEM.getQuery(), item.getId()));
+        requestsHandler.close();
     }
 
     public void createAuctionsTable() {

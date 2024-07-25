@@ -4,6 +4,7 @@ import fr.nuggetreckt.nswah.AuctionHouse;
 import fr.nuggetreckt.nswah.gui.impl.AuctionHouseGUI;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.InventoryView;
@@ -17,7 +18,7 @@ public class OnInvExit implements Listener {
         this.instance = instance;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW)
     public void onInvExit(@NotNull InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
         InventoryView inventoryView = event.getView();

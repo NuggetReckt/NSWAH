@@ -11,8 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
 public class AuctionHouseCommand implements CommandExecutor {
 
     private final AuctionHouse instance;
@@ -29,20 +27,15 @@ public class AuctionHouseCommand implements CommandExecutor {
                 return true;
             }
             if (args[0].equalsIgnoreCase("test")) {
+                //TEMPORAIRE
                 ItemStack item = player.getInventory().getItemInMainHand();
+                if (item.getType() == Material.AIR) {
+                    //L'item n'est pas valide
+                    return true;
+                }
                 AuctionItem auctionItem = new AuctionItem(0, item, instance.getAuctionHandler().getCategoryTypeByItem(item), Integer.parseInt(args[1]), player);
                 instance.getDatabaseManager().getRequestSender().insertAuctionItem(auctionItem);
-                player.getInventory().getItemInMainHand().setType(Material.AIR);
-            } else if (args[0].equalsIgnoreCase("test2")) {
-                List<AuctionItem> auctionItems = instance.getDatabaseManager().getRequestSender().getAuctionItems();
-
-                for (AuctionItem item : auctionItems) {
-                    player.sendMessage("DEBUG: item = " + item.getItem().getType());
-                    player.sendMessage("DEBUG: seller = " + item.getSeller());
-                    player.sendMessage("DEBUG: price = " + item.getPrice());
-
-                    player.getInventory().addItem(item.getItem());
-                }
+                player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
             }
         }
         return true;

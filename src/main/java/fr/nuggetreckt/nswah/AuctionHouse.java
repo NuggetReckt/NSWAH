@@ -8,6 +8,8 @@ import fr.nuggetreckt.nswah.gui.GuiManager;
 import fr.nuggetreckt.nswah.listener.OnInvClickListener;
 import fr.nuggetreckt.nswah.listener.OnInvExit;
 import io.github.cdimascio.dotenv.Dotenv;
+import net.milkbowl.vault.economy.Economy;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,6 +25,7 @@ public class AuctionHouse extends JavaPlugin {
     private final DatabaseManager databaseManager;
     private final GuiManager guiManager;
     private final AuctionHandler auctionHandler;
+    private Economy economy;
 
     private final Logger logger;
 
@@ -47,6 +50,9 @@ public class AuctionHouse extends JavaPlugin {
         //Register events
         getServer().getPluginManager().registerEvents(new OnInvClickListener(this), this);
         getServer().getPluginManager().registerEvents(new OnInvExit(this), this);
+
+        //Set economy
+        setEconomy();
 
         logger.info(String.format("[%s] Plugin loaded successfully", getDescription().getName()));
     }
@@ -78,6 +84,10 @@ public class AuctionHouse extends JavaPlugin {
         return this.auctionHandler;
     }
 
+    public Economy getEconomy() {
+        return this.economy;
+    }
+
     private @NotNull Credentials getCredentials() {
         Dotenv dotenv = Dotenv.configure()
                 .directory("/env/")
@@ -89,5 +99,18 @@ public class AuctionHouse extends JavaPlugin {
         String name = dotenv.get("DB_NAME");
 
         return new Credentials(user, password, name);
+    }
+
+    private void setEconomy() {
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            logger.severe("The Vault plugin was not found! Please install it before starting the server.");
+            logger.info("Stopping the server...");
+            getServer().shutdown();
+            return;
+        }
+        RegisteredServiceProvider<Economy> provider = getServer().getServicesManager().getRegistration(Economy.class);
+        if (provider != null) {
+            economy = provider.getProvider();
+        }
     }
 }
