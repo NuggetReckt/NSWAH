@@ -49,7 +49,7 @@ public class BuyGUI implements CustomInventory {
         }
 
         //Utils
-        slots[13] = new ItemUtils(Material.GREEN_STAINED_GLASS_PANE).setName("§8§l»§r §3Confirmer §8§l«").hideFlags().setLore(" ", "§8| §fConfirmer l'achat de l'item").toItemStack();
+        slots[13] = new ItemUtils(Material.GREEN_STAINED_GLASS_PANE).setName("§8§l»§r §3Confirmer §8§l«").hideFlags().setLore(" ", "§8| §fConfirmer l'achat de l'item pour §3" + selectedItem.get(player).getPrice() + "NSc").toItemStack();
         slots[21] = new ItemUtils(Material.ARROW).setName("§8§l»§r §3Retour §8§l«").hideFlags().setLore(" ", "§8| §fRetourne au menu principal").toItemStack();
         slots[22] = new ItemUtils(Material.BARRIER).setName("§8§l»§r §3Fermer §8§l«").hideFlags().setLore(" ", "§8| §fFerme le menu").toItemStack();
 

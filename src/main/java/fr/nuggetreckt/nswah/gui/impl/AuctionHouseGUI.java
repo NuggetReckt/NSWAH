@@ -59,14 +59,14 @@ public class AuctionHouseGUI implements CustomInventory {
             if (item.getItemMeta() instanceof Damageable damageable) {
                 slots[slot] = new ItemUtils(item.getType())
                         .setName(item.getItemMeta().getDisplayName())
-                        .setLore(" ", " §8| §fVendu par : §3" + auctionItem.getSeller().getName(), " §8| §fPrix : §3" + auctionItem.getPrice())
+                        .setLore(" ", " §8| §fVendu par : §3" + auctionItem.getSeller().getName(), " §8| §fPrix : §3" + auctionItem.getPrice() + "NSc")
                         .addEnchantments(item.getEnchantments()).setDurability((short) damageable.getDamage())
                         .toItemStack();
             } else {
                 assert item.getItemMeta() != null;
                 slots[slot] = new ItemUtils(item.getType())
                         .setName(item.getItemMeta().getDisplayName())
-                        .setLore(" ", " §8| §fVendu par : §3" + auctionItem.getSeller().getName(), " §8| §fPrix : §3" + auctionItem.getPrice())
+                        .setLore(" ", " §8| §fVendu par : §3" + auctionItem.getSeller().getName(), " §8| §fPrix : §3" + auctionItem.getPrice() + "NSc")
                         .addEnchantments(item.getEnchantments()).toItemStack();
             }
             slots[slot].setAmount(item.getAmount());
@@ -86,7 +86,7 @@ public class AuctionHouseGUI implements CustomInventory {
         }
         slots[45] = new ItemUtils(Material.SUNFLOWER).setName("§8§l»§r §3Vendre §8§l«").hideFlags().setLore(" ", "§8| §fAccède au menu de vente").toItemStack();
         slots[49] = new ItemUtils(Material.BARRIER).setName("§8§l»§r §3Fermer §8§l«").hideFlags().setLore(" ", "§8| §fFerme le menu").toItemStack();
-        slots[52] = new ItemUtils(Material.HOPPER).setName("§8§l»§r §3Trier §8§l«").hideFlags().setLore(" ", "§8| §cà faire").toItemStack();
+        slots[52] = new ItemUtils(Material.HOPPER).setName("§8§l»§r §3Trier §8§l«").hideFlags().setLore(" ", "§8| §fTrié par " + instance.getAuctionHandler().getCurrentSortType(player).getDisplayName()).toItemStack();
         slots[53] = new ItemUtils(Material.SNOWBALL).setName("§8§l»§r §3Rafraîchir §8§l«").hideFlags().setLore(" ", "§8| §fActualise la page").toItemStack();
 
         //Placeholders
@@ -109,7 +109,7 @@ public class AuctionHouseGUI implements CustomInventory {
                 player.playSound(player, Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, 1, 1);
             }
             case HOPPER -> {
-                //TODO: sort items
+                instance.getAuctionHandler().toggleTypeSort(player);
                 instance.getGuiManager().refresh(player, this.getClass());
                 player.playSound(player, Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, 1, 1);
             }
@@ -162,7 +162,7 @@ public class AuctionHouseGUI implements CustomInventory {
     }
 
     private void setupAuctionItems(Player player) {
-        List<AuctionItem> items = instance.getAuctionHandler().getAuctionItems();
+        List<AuctionItem> items = instance.getAuctionHandler().getAuctionItems(player);
         int slot;
         int startIndex = currentPage.get(player) * maxPerPage;
         int endIndex = Math.min(startIndex + maxPerPage, items.size());

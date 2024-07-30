@@ -93,7 +93,7 @@ public class SellGUI implements CustomInventory {
             case GRAY_STAINED_GLASS_PANE -> player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
             case GREEN_STAINED_GLASS_PANE -> {
                 CategoryType type = instance.getAuctionHandler().getCategoryTypeByItem(clickedItem);
-                AuctionItem auctionItem = new AuctionItem(0, selectedItem.get(player), type, itemPrice.get(player), player);
+                AuctionItem auctionItem = new AuctionItem(selectedItem.get(player), type, itemPrice.get(player), player);
 
                 instance.getDatabaseManager().getRequestSender().insertAuctionItem(auctionItem);
 

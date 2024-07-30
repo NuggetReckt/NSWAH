@@ -2,6 +2,7 @@ package fr.nuggetreckt.nswah.database;
 
 import fr.nuggetreckt.nswah.AuctionHouse;
 import fr.nuggetreckt.nswah.auction.AuctionItem;
+import fr.nuggetreckt.nswah.auction.SortType;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -47,7 +48,7 @@ public class RequestSender {
         }
     }
 
-    public List<AuctionItem> getAuctionItems() {
+    public List<AuctionItem> getAuctionItems(@NotNull SortType sortType) {
         requestsHandler = instance.getDatabaseManager().getRequestHandler();
 
         InputStream inputStream;
@@ -57,7 +58,7 @@ public class RequestSender {
         ItemStack item;
         List<AuctionItem> result = new ArrayList<>();
 
-        requestsHandler.retrieveData(Queries.RETRIEVE_AUCTION_ITEMS.getQuery());
+        requestsHandler.retrieveData(getQueriesBySortType(sortType).getQuery());
         try {
             while (requestsHandler.resultSet.next()) {
                 inputStream = requestsHandler.resultSet.getBlob("itemData").getBinaryStream();
@@ -98,5 +99,19 @@ public class RequestSender {
 
         requestsHandler.updateData(Queries.CREATE_AUCTIONS_TABLE.getQuery());
         requestsHandler.close();
+    }
+
+    private Queries getQueriesBySortType(@NotNull SortType sortType) {
+        Queries query = null;
+
+        switch (sortType) {
+            case DATE_DESC -> query = Queries.RETRIEVE_AUCTION_ITEMS_BY_DATE_DESC;
+            case DATE_ASC -> query = Queries.RETRIEVE_AUCTION_ITEMS_BY_DATE;
+            case PLAYER_ASC -> query = Queries.RETRIEVE_AUCTION_ITEMS_BY_PLAYER_NAME;
+            case PLAYER_DESC -> query = Queries.RETRIEVE_AUCTION_ITEMS_BY_PLAYER_NAME_DESC;
+            case PRICE_ASC -> query = Queries.RETRIEVE_AUCTION_ITEMS_BY_PRICE;
+            case PRICE_DESC -> query = Queries.RETRIEVE_AUCTION_ITEMS_BY_PRICE_DESC;
+        }
+        return query;
     }
 }

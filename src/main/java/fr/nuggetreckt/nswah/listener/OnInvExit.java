@@ -28,6 +28,7 @@ public class OnInvExit implements Listener {
 
         if (inventoryView.getTitle().equalsIgnoreCase(auctionHouseGUI.getName())) {
             auctionHouseGUI.setCurrentPage(player, 0, true);
+            instance.getAuctionHandler().sortTypeMap.remove(player);
         }
         if (inventoryView.getTitle().equalsIgnoreCase(buyGUI.getName())) {
             buyGUI.selectedItem.remove(player);

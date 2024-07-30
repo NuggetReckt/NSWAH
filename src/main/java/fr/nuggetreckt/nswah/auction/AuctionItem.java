@@ -19,6 +19,14 @@ public class AuctionItem {
         this.seller = seller;
     }
 
+    public AuctionItem(ItemStack item, CategoryType type, long price, OfflinePlayer seller) {
+        this.id = 0;
+        this.item = item;
+        this.categoryType = type;
+        this.price = price;
+        this.seller = seller;
+    }
+
     public int getId() {
         return this.id;
     }
