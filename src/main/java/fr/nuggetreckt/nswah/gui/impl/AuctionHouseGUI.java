@@ -4,8 +4,6 @@ import fr.nuggetreckt.nswah.AuctionHouse;
 import fr.nuggetreckt.nswah.auction.AuctionItem;
 import fr.nuggetreckt.nswah.gui.CustomInventory;
 import fr.nuggetreckt.nswah.util.ItemUtils;
-import fr.nuggetreckt.nswah.util.MessageManager;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -86,15 +84,15 @@ public class AuctionHouseGUI implements CustomInventory {
         } else {
             slots[50] = new ItemUtils(Material.LIGHT_BLUE_STAINED_GLASS_PANE).setName(" ").toItemStack();
         }
+        slots[45] = new ItemUtils(Material.SUNFLOWER).setName("§8§l»§r §3Vendre §8§l«").hideFlags().setLore(" ", "§8| §fAccède au menu de vente").toItemStack();
         slots[49] = new ItemUtils(Material.BARRIER).setName("§8§l»§r §3Fermer §8§l«").hideFlags().setLore(" ", "§8| §fFerme le menu").toItemStack();
+        slots[52] = new ItemUtils(Material.HOPPER).setName("§8§l»§r §3Trier §8§l«").hideFlags().setLore(" ", "§8| §cà faire").toItemStack();
         slots[53] = new ItemUtils(Material.SNOWBALL).setName("§8§l»§r §3Rafraîchir §8§l«").hideFlags().setLore(" ", "§8| §fActualise la page").toItemStack();
 
         //Placeholders
-        slots[45] = new ItemUtils(Material.LIGHT_BLUE_STAINED_GLASS_PANE).setName(" ").toItemStack();
         slots[46] = new ItemUtils(Material.LIGHT_BLUE_STAINED_GLASS_PANE).setName(" ").toItemStack();
         slots[47] = new ItemUtils(Material.LIGHT_BLUE_STAINED_GLASS_PANE).setName(" ").toItemStack();
         slots[51] = new ItemUtils(Material.LIGHT_BLUE_STAINED_GLASS_PANE).setName(" ").toItemStack();
-        slots[52] = new ItemUtils(Material.LIGHT_BLUE_STAINED_GLASS_PANE).setName(" ").toItemStack();
 
         return () -> slots;
     }
@@ -109,6 +107,16 @@ public class AuctionHouseGUI implements CustomInventory {
             case SNOWBALL -> {
                 instance.getGuiManager().refresh(player, this.getClass());
                 player.playSound(player, Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, 1, 1);
+            }
+            case HOPPER -> {
+                //TODO: sort items
+                instance.getGuiManager().refresh(player, this.getClass());
+                player.playSound(player, Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, 1, 1);
+            }
+            case SUNFLOWER -> {
+                player.closeInventory();
+                player.playSound(player, Sound.ITEM_BOOK_PAGE_TURN, 1, 1);
+                instance.getGuiManager().open(player, SellGUI.class);
             }
             case ARROW -> {
                 int newPage = currentPage.get(player);
@@ -125,35 +133,17 @@ public class AuctionHouseGUI implements CustomInventory {
             default -> {
                 if (!isClickable(clickedItem)) return;
                 AuctionItem auctionItem = auctionItems.get(slot);
-                Economy economy = instance.getEconomy();
+                BuyGUI buyGUI = (BuyGUI) instance.getGuiManager().registeredMenus.get(BuyGUI.class);
+                EditGUI editGUI = (EditGUI) instance.getGuiManager().registeredMenus.get(EditGUI.class);
 
+                player.playSound(player, Sound.ITEM_BOOK_PAGE_TURN, 1, 1);
                 if (Objects.requireNonNull(auctionItem.getSeller().getName()).equalsIgnoreCase(player.getName())) {
-                    //TODO: panel gestion item
-                    System.out.println("DEBUG: Owner");
+                    editGUI.selectedItem.put(player, auctionItem);
+                    instance.getGuiManager().open(player, EditGUI.class);
                     return;
                 }
-                if (getItemCount(player) > 35) {
-                    player.sendMessage(MessageManager.NO_INVENTORY_ROOM.getMessage());
-                    return;
-                }
-                if (economy.getBalance(player) < auctionItem.getPrice()) {
-                    player.sendMessage(MessageManager.NO_ENOUGH_MONEY.getMessage());
-                    return;
-                }
-                instance.getDatabaseManager().getRequestSender().deleteAuctionItem(auctionItem);
-                auctionItems.remove(slot);
-                player.getInventory().addItem(auctionItem.getItem());
-                economy.withdrawPlayer(player, auctionItem.getPrice());
-                economy.depositPlayer(auctionItem.getSeller(), auctionItem.getPrice());
-                player.sendMessage(String.format(MessageManager.PAYMENT_SUCCESS.getMessage(), auctionItem.getPrice(), auctionItem.getSeller().getName()));
-                player.playSound(player, Sound.BLOCK_NOTE_BLOCK_HARP, 1, 5);
-                player.closeInventory();
-
-                if (auctionItem.getSeller().isOnline()) {
-                    Player target = (Player) auctionItem.getSeller();
-                    target.sendMessage(String.format(MessageManager.PAYMENT_RECEIVED.getMessage(), player.getName(), auctionItem.getPrice()));
-                    target.playSound(target, Sound.BLOCK_NOTE_BLOCK_HARP, 1, 5);
-                }
+                buyGUI.selectedItem.put(player, auctionItem);
+                instance.getGuiManager().open(player, BuyGUI.class);
             }
         }
     }
@@ -184,16 +174,5 @@ public class AuctionHouseGUI implements CustomInventory {
             slot = i - startIndex;
             auctionItems.put(slot, items.get(i));
         }
-    }
-
-    private int getItemCount(@NotNull Player player) {
-        int itemCount = 0;
-
-        for (ItemStack i : player.getInventory().getContents()) {
-            if (i != null && !i.getType().isAir()) {
-                itemCount++;
-            }
-        }
-        return itemCount;
     }
 }

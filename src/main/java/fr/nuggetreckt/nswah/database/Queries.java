@@ -3,6 +3,7 @@ package fr.nuggetreckt.nswah.database;
 public enum Queries {
     INSERT_AUCTION_ITEM("INSERT INTO auction_items (sellerUUID, sellerName, price, itemData) VALUES (?, ?, ?, ?);"),
     DELETE_AUCTION_ITEM("DELETE FROM auction_items WHERE id = %d;"),
+    UPDATE_PRICE("UPDATE auction_items SET price = %d WHERE id = %d;"),
     RETRIEVE_AUCTION_ITEMS("SELECT * FROM auction_items;"),
 
     //Create table req

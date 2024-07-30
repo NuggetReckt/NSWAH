@@ -1,11 +1,12 @@
 package fr.nuggetreckt.nswah.auction;
 
 public enum CategoryType {
+    ALL(""),
     COMBAT(""),
     TOOLS(""),
     ENCHANTS(""),
     BLOCS(""),
-    OTHER("")
+    OTHER(""),
     ;
 
     private final String displayName;

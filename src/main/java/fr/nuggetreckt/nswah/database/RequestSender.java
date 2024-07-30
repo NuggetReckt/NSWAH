@@ -79,6 +79,13 @@ public class RequestSender {
         return result;
     }
 
+    public void updateAuctionItemPrice(@NotNull AuctionItem item, long price) {
+        requestsHandler = instance.getDatabaseManager().getRequestHandler();
+
+        requestsHandler.updateData(String.format(Queries.UPDATE_PRICE.getQuery(), price, item.getId()));
+        requestsHandler.close();
+    }
+
     public void deleteAuctionItem(@NotNull AuctionItem item) {
         requestsHandler = instance.getDatabaseManager().getRequestHandler();
 
