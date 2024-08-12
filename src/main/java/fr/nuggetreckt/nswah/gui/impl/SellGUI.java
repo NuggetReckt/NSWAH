@@ -51,7 +51,7 @@ public class SellGUI implements CustomInventory {
         if (selectedItem.containsKey(player) && selectedItem.get(player) != null) {
             slots[4] = selectedItem.get(player);
             if (itemPrice.containsKey(player) && itemPrice.get(player) != null) {
-                slots[13] = new ItemUtils(Material.GREEN_STAINED_GLASS_PANE).setName("§8§l»§r §3Vendre §8§l«").hideFlags().setLore(" ", "§8| §fConfirme la vente de votre item").toItemStack();
+                slots[13] = new ItemUtils(Material.GREEN_STAINED_GLASS_PANE).setName("§8§l»§r §3Vendre §8§l«").hideFlags().setLore(" ", "§8| §fConfirme la vente de votre item pour §3" + itemPrice.get(player) + "NSc").toItemStack();
             } else {
                 slots[13] = new ItemUtils(Material.YELLOW_STAINED_GLASS_PANE).setName("§8§l»§r §3Définir un prix §8§l«").hideFlags().setLore(" ", "§8| §fCliquez pour définir un prix").toItemStack();
             }
@@ -99,7 +99,7 @@ public class SellGUI implements CustomInventory {
 
                 player.playSound(player, Sound.BLOCK_NOTE_BLOCK_HARP, 1, 1);
                 player.sendMessage(MessageManager.ITEM_PUT_ON_SALE.getMessage());
-                player.getInventory().remove(selectedItem.get(player));
+                player.getInventory().removeItem(selectedItem.get(player));
                 player.closeInventory();
             }
             case YELLOW_STAINED_GLASS_PANE -> {

@@ -85,10 +85,12 @@ public class BuyGUI implements CustomInventory {
                 Economy economy = instance.getEconomy();
 
                 if (getItemCount(player) > 35) {
+                    player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
                     player.sendMessage(MessageManager.NO_INVENTORY_ROOM.getMessage());
                     return;
                 }
                 if (economy.getBalance(player) < auctionItem.getPrice()) {
+                    player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
                     player.sendMessage(MessageManager.NO_ENOUGH_MONEY.getMessage());
                     return;
                 }

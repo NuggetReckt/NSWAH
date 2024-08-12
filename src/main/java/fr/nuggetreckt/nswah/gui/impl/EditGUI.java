@@ -86,6 +86,7 @@ public class EditGUI implements CustomInventory {
             }
             case REDSTONE -> {
                 if (getItemCount(player) > 35) {
+                    player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
                     player.sendMessage(MessageManager.NO_INVENTORY_ROOM.getMessage());
                     return;
                 }
