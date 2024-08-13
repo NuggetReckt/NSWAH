@@ -9,7 +9,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -55,20 +55,13 @@ public class AuctionHouseGUI implements CustomInventory {
         //AuctionItems
         for (AuctionItem auctionItem : auctionItems.values()) {
             ItemStack item = auctionItem.getItem();
+            ItemMeta meta = item.getItemMeta();
 
-            if (item.getItemMeta() instanceof Damageable damageable) {
-                slots[slot] = new ItemUtils(item.getType())
-                        .setName(item.getItemMeta().getDisplayName())
-                        .setLore(" ", " §8| §fVendu par : §3" + auctionItem.getSeller().getName(), " §8| §fPrix : §3" + auctionItem.getPrice() + "NSc")
-                        .addEnchantments(item.getEnchantments()).setDurability((short) damageable.getDamage())
-                        .toItemStack();
-            } else {
-                assert item.getItemMeta() != null;
-                slots[slot] = new ItemUtils(item.getType())
-                        .setName(item.getItemMeta().getDisplayName())
-                        .setLore(" ", " §8| §fVendu par : §3" + auctionItem.getSeller().getName(), " §8| §fPrix : §3" + auctionItem.getPrice() + "NSc")
-                        .addEnchantments(item.getEnchantments()).toItemStack();
-            }
+            assert meta != null;
+            meta.setLore(List.of(" ", " §8| §fVendu par : §3" + auctionItem.getSeller().getName(), " §8| §fPrix : §3" + auctionItem.getPrice() + "NSc"));
+
+            slots[slot] = auctionItem.getItem();
+            slots[slot].setItemMeta(meta);
             slots[slot].setAmount(item.getAmount());
             slot++;
         }
@@ -132,10 +125,16 @@ public class AuctionHouseGUI implements CustomInventory {
             }
             default -> {
                 if (!isClickable(clickedItem)) return;
+                if (player.getInventory().equals(inventory)) return;
+
                 AuctionItem auctionItem = auctionItems.get(slot);
+                ItemMeta meta = auctionItem.getItem().getItemMeta();
                 BuyGUI buyGUI = (BuyGUI) instance.getGuiManager().registeredMenus.get(BuyGUI.class);
                 EditGUI editGUI = (EditGUI) instance.getGuiManager().registeredMenus.get(EditGUI.class);
 
+                assert meta != null;
+                meta.setLore(null);
+                auctionItem.getItem().setItemMeta(meta);
                 player.playSound(player, Sound.ITEM_BOOK_PAGE_TURN, 1, 1);
                 if (Objects.requireNonNull(auctionItem.getSeller().getName()).equalsIgnoreCase(player.getName())) {
                     editGUI.selectedItem.put(player, auctionItem);
