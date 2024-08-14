@@ -49,6 +49,17 @@ public class AuctionHandler {
         return sortTypeMap.get(player);
     }
 
+    public boolean exists(int id) {
+        List<AuctionItem> auctionItems = instance.getDatabaseManager().getRequestSender().getAuctionItems(SortType.DATE_DESC);
+
+        for (AuctionItem item : auctionItems) {
+            if (item.getId() == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void toggleTypeSort(@NotNull Player player) {
         SortType current = getCurrentSortType(player);
         SortType[] values = SortType.values();

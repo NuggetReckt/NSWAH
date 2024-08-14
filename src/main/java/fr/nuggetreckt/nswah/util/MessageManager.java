@@ -7,6 +7,7 @@ public enum MessageManager {
     NO_PERMISSION("§cVous n'avez pas la permission."),
     NO_INVENTORY_ROOM("§cVous n'avez pas assez de place dans votre inventaire !"),
     NO_ENOUGH_MONEY("§cVous n'avez pas assez d'argent pour acheter cet item !"),
+    ITEM_NOT_EXISTS("§cL'item demandé à déjà été vendu ou retiré de la vente !"),
 
     //Success messages
     PAYMENT_SUCCESS("§fPayement de §3%dNSc §fà §3%s §feffectué avec succès."),
