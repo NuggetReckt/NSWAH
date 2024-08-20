@@ -10,6 +10,7 @@ public enum Queries {
     RETRIEVE_AUCTION_ITEMS_BY_PLAYER_NAME_DESC("SELECT * FROM auction_items ORDER BY sellerName DESC;"),
     RETRIEVE_AUCTION_ITEMS_BY_PRICE("SELECT * FROM auction_items ORDER BY price;"),
     RETRIEVE_AUCTION_ITEMS_BY_PRICE_DESC("SELECT * FROM auction_items ORDER BY price DESC;"),
+    RETRIEVE_PLAYER_AUCTIONS_ITEMS_COUNT("SELECT COUNT(*) FROM auction_items WHERE sellerUUID = %s;"),
 
     //Create table req
     CREATE_AUCTIONS_TABLE("""

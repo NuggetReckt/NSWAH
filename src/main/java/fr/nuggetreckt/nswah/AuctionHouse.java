@@ -29,6 +29,8 @@ public class AuctionHouse extends JavaPlugin {
 
     private final Logger logger;
 
+    private final int maxSoldItems = 5;
+
     public AuctionHouse() {
         instance = this;
         prefix = "§8[§3HDV§8] §r";
@@ -86,6 +88,10 @@ public class AuctionHouse extends JavaPlugin {
 
     public Economy getEconomy() {
         return this.economy;
+    }
+
+    public int getMaxSoldItems() {
+        return this.maxSoldItems;
     }
 
     private @NotNull Credentials getCredentials() {

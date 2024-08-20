@@ -46,6 +46,7 @@ public class SellGUI implements CustomInventory {
     @Override
     public Supplier<ItemStack[]> getContents(@NotNull Player player) {
         ItemStack[] slots = new ItemStack[getSlots()];
+        int itemCount = instance.getDatabaseManager().getRequestSender().getPlayerAuctionItemsCount(player);
 
         //Item
         if (selectedItem.containsKey(player) && selectedItem.get(player) != null) {
@@ -62,6 +63,7 @@ public class SellGUI implements CustomInventory {
         //Utils
         slots[21] = new ItemUtils(Material.ARROW).setName("§8§l»§r §3Retour §8§l«").hideFlags().setLore(" ", "§8| §fRetourne au menu principal").toItemStack();
         slots[22] = new ItemUtils(Material.BARRIER).setName("§8§l»§r §3Fermer §8§l«").hideFlags().setLore(" ", "§8| §fFerme le menu").toItemStack();
+        slots[24] = new ItemUtils(Material.LANTERN).setName("§8§l»§r §3Infos §8§l«").hideFlags().setLore(" ", "§8| §3" + itemCount + "§8/§3" + instance.getMaxSoldItems() + " §fitems en vente").toItemStack();
 
         //Placeholders
         slots[0] = new ItemUtils(Material.LIGHT_BLUE_STAINED_GLASS_PANE).setName(" ").toItemStack();
@@ -93,7 +95,17 @@ public class SellGUI implements CustomInventory {
             case GRAY_STAINED_GLASS_PANE -> player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
             case GREEN_STAINED_GLASS_PANE -> {
                 CategoryType type = instance.getAuctionHandler().getCategoryTypeByItem(clickedItem);
-                AuctionItem auctionItem = new AuctionItem(selectedItem.get(player), type, itemPrice.get(player), player);
+                int itemCount = instance.getDatabaseManager().getRequestSender().getPlayerAuctionItemsCount(player);
+                AuctionItem auctionItem;
+
+                if (itemCount >= instance.getMaxSoldItems()) {
+                    player.closeInventory();
+                    player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
+                    player.sendMessage(String.format(MessageManager.TOO_MUCH_ITEMS.getMessage(), instance.getMaxSoldItems()));
+                    instance.getGuiManager().open(player, AuctionHouseGUI.class);
+                    return;
+                }
+                auctionItem = new AuctionItem(selectedItem.get(player), type, itemPrice.get(player), player);
 
                 instance.getDatabaseManager().getRequestSender().insertAuctionItem(auctionItem);
 

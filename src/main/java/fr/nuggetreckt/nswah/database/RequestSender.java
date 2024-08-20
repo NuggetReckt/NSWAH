@@ -4,6 +4,7 @@ import fr.nuggetreckt.nswah.AuctionHouse;
 import fr.nuggetreckt.nswah.auction.AuctionItem;
 import fr.nuggetreckt.nswah.auction.SortType;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -78,6 +79,23 @@ public class RequestSender {
             requestsHandler.close();
         }
         return result;
+    }
+
+    public int getPlayerAuctionItemsCount(@NotNull Player player) {
+        requestsHandler = instance.getDatabaseManager().getRequestHandler();
+        requestsHandler.retrieveData(String.format(Queries.RETRIEVE_PLAYER_AUCTIONS_ITEMS_COUNT.getQuery(), player.getUniqueId()));
+
+        int count = 0;
+        try {
+            while (requestsHandler.resultSet.next()) {
+                count = requestsHandler.resultSet.getInt(1);
+            }
+        } catch (SQLException e) {
+            instance.getLogger().severe("SQLException: " + e.getMessage());
+            instance.getLogger().severe("SQLState: " + e.getSQLState());
+            instance.getLogger().severe("VendorError: " + e.getErrorCode());
+        }
+        return count;
     }
 
     public void updateAuctionItemPrice(@NotNull AuctionItem item, long price) {
