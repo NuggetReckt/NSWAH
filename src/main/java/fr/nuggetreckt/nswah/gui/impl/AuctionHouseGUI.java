@@ -78,12 +78,12 @@ public class AuctionHouseGUI implements CustomInventory {
             slots[50] = new ItemUtils(Material.LIGHT_BLUE_STAINED_GLASS_PANE).setName(" ").toItemStack();
         }
         slots[45] = new ItemUtils(Material.SUNFLOWER).setName("§8§l»§r §3Vendre §8§l«").hideFlags().setLore(" ", "§8| §fAccède au menu de vente").toItemStack();
+        slots[46] = new ItemUtils(Material.NETHER_STAR).setName("§8§l»§r §3Mes items en vente §8§l«").hideFlags().setLore(" ", "§8| §fVoir les items que vous avez mis en vente").toItemStack();
         slots[49] = new ItemUtils(Material.BARRIER).setName("§8§l»§r §3Fermer §8§l«").hideFlags().setLore(" ", "§8| §fFerme le menu").toItemStack();
         slots[52] = new ItemUtils(Material.HOPPER).setName("§8§l»§r §3Trier §8§l«").hideFlags().setLore(" ", "§8| §fTrié par " + instance.getAuctionHandler().getCurrentSortType(player).getDisplayName()).toItemStack();
         slots[53] = new ItemUtils(Material.SNOWBALL).setName("§8§l»§r §3Rafraîchir §8§l«").hideFlags().setLore(" ", "§8| §fActualise la page").toItemStack();
 
         //Placeholders
-        slots[46] = new ItemUtils(Material.LIGHT_BLUE_STAINED_GLASS_PANE).setName(" ").toItemStack();
         slots[47] = new ItemUtils(Material.LIGHT_BLUE_STAINED_GLASS_PANE).setName(" ").toItemStack();
         slots[51] = new ItemUtils(Material.LIGHT_BLUE_STAINED_GLASS_PANE).setName(" ").toItemStack();
 
@@ -111,6 +111,11 @@ public class AuctionHouseGUI implements CustomInventory {
                 player.playSound(player, Sound.ITEM_BOOK_PAGE_TURN, 1, 1);
                 instance.getGuiManager().open(player, SellGUI.class);
             }
+            case NETHER_STAR -> {
+                player.closeInventory();
+                player.playSound(player, Sound.ITEM_BOOK_PAGE_TURN, 1, 1);
+                instance.getGuiManager().open(player, SoldItemsGUI.class);
+            }
             case ARROW -> {
                 int newPage = currentPage.get(player);
 
@@ -122,6 +127,8 @@ public class AuctionHouseGUI implements CustomInventory {
                 setCurrentPage(player, newPage, true);
                 instance.getGuiManager().refresh(player, this.getClass());
                 player.playSound(player, Sound.ITEM_BOOK_PAGE_TURN, 1, 1);
+            }
+            case LANTERN -> {
             }
             default -> {
                 if (!isClickable(clickedItem)) return;

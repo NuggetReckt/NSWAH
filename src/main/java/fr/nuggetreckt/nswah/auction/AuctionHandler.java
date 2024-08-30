@@ -11,6 +11,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class AuctionHandler {
 
@@ -26,6 +27,18 @@ public class AuctionHandler {
     public List<AuctionItem> getAuctionItems(Player player) {
         sortTypeMap.putIfAbsent(player, SortType.DATE_DESC);
         return instance.getDatabaseManager().getRequestSender().getAuctionItems(getCurrentSortType(player));
+    }
+
+    public List<AuctionItem> getPlayerSoldItems(Player player) {
+        List<AuctionItem> items = instance.getDatabaseManager().getRequestSender().getAuctionItems(SortType.DATE_DESC);
+        List<AuctionItem> soldItems = new ArrayList<>();
+
+        for (AuctionItem item : items) {
+            if (Objects.requireNonNull(item.getSeller().getName()).equals(player.getName())) {
+                soldItems.add(item);
+            }
+        }
+        return soldItems;
     }
 
     public List<AuctionItem> getAuctionItemsByCategory(Player player, CategoryType category) {

@@ -1,10 +1,7 @@
 package fr.nuggetreckt.nswah.gui;
 
 import fr.nuggetreckt.nswah.AuctionHouse;
-import fr.nuggetreckt.nswah.gui.impl.AuctionHouseGUI;
-import fr.nuggetreckt.nswah.gui.impl.BuyGUI;
-import fr.nuggetreckt.nswah.gui.impl.EditGUI;
-import fr.nuggetreckt.nswah.gui.impl.SellGUI;
+import fr.nuggetreckt.nswah.gui.impl.*;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -49,5 +46,6 @@ public class GuiManager {
         addMenu(new SellGUI(instance));
         addMenu(new BuyGUI(instance));
         addMenu(new EditGUI(instance));
+        addMenu(new SoldItemsGUI(instance));
     }
 }

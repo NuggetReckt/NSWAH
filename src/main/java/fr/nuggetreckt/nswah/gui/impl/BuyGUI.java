@@ -44,12 +44,12 @@ public class BuyGUI implements CustomInventory {
         //Item
         if (selectedItem.containsKey(player) && selectedItem.get(player) != null) {
             slots[4] = selectedItem.get(player).getItem();
+            slots[13] = new ItemUtils(Material.GREEN_STAINED_GLASS_PANE).setName("§8§l»§r §3Confirmer §8§l«").hideFlags().setLore(" ", "§8| §fConfirmer l'achat de l'item pour §3" + selectedItem.get(player).getPrice() + "NSc").toItemStack();
         } else {
             slots[13] = new ItemUtils(Material.GRAY_STAINED_GLASS_PANE).setName("§8§l»§r §cErreur §8§l«").hideFlags().setLore(" ", "§8| §fUne erreur est survenue", "  §flors du chargement de l'item").toItemStack();
         }
 
         //Utils
-        slots[13] = new ItemUtils(Material.GREEN_STAINED_GLASS_PANE).setName("§8§l»§r §3Confirmer §8§l«").hideFlags().setLore(" ", "§8| §fConfirmer l'achat de l'item pour §3" + selectedItem.get(player).getPrice() + "NSc").toItemStack();
         slots[21] = new ItemUtils(Material.ARROW).setName("§8§l»§r §3Retour §8§l«").hideFlags().setLore(" ", "§8| §fRetourne au menu principal").toItemStack();
         slots[22] = new ItemUtils(Material.BARRIER).setName("§8§l»§r §3Fermer §8§l«").hideFlags().setLore(" ", "§8| §fFerme le menu").toItemStack();
 

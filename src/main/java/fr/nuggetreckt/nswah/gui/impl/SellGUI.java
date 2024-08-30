@@ -122,6 +122,8 @@ public class SellGUI implements CustomInventory {
             }
             default -> {
                 if (!isClickable(clickedItem)) return;
+                if (!player.getInventory().equals(inventory)) return;
+
                 if (!selectedItem.containsKey(player) || selectedItem.get(player) == null) {
                     selectedItem.put(player, clickedItem);
                 } else {
