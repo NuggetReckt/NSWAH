@@ -7,6 +7,7 @@ import fr.nuggetreckt.nswah.database.DatabaseManager;
 import fr.nuggetreckt.nswah.gui.GuiManager;
 import fr.nuggetreckt.nswah.listener.OnInvClickListener;
 import fr.nuggetreckt.nswah.listener.OnInvExit;
+import fr.nuggetreckt.nswah.listener.OnJoinListener;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -52,6 +53,7 @@ public class AuctionHouse extends JavaPlugin {
         //Register events
         getServer().getPluginManager().registerEvents(new OnInvClickListener(this), this);
         getServer().getPluginManager().registerEvents(new OnInvExit(this), this);
+        getServer().getPluginManager().registerEvents(new OnJoinListener(this), this);
 
         //Set economy
         setEconomy();

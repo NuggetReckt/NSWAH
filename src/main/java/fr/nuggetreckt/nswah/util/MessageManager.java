@@ -13,6 +13,7 @@ public enum MessageManager {
     //Success messages
     PAYMENT_SUCCESS("§fPayement de §3%dNSc §fà §3%s §feffectué avec succès."),
     PAYMENT_RECEIVED("§3%s §fvous a acheté un item pour §3%dNSc§f. L'argent à été versé sur votre compte."),
+    OFFLINE_PAYMENT_RECEIVED("§fPendant votre absence, §3%s §fvous a acheté un item pour §3%dNSc§f."),
     ITEM_PRICE_UPDATED("§fLe prix de vente de votre item à été mis à jour avec succès."),
     ITEM_PRICE_SET("§fLe prix de vente de votre item à été défini à §3%dNSc§f."),
     ITEM_PUT_ON_SALE("§fVotre item à été mis en vente avec succès !"),

@@ -10,6 +10,7 @@ public class AuctionItem {
     private final ItemStack item;
     private final CategoryType categoryType;
     private final OfflinePlayer seller;
+    private OfflinePlayer buyer = null;
 
     public AuctionItem(int id, ItemStack item, CategoryType type, long price, OfflinePlayer seller) {
         this.id = id;
@@ -45,6 +46,14 @@ public class AuctionItem {
 
     public void setPrice(long price) {
         this.price = price;
+    }
+
+    public void setBuyer(OfflinePlayer buyer) {
+        this.buyer = buyer;
+    }
+
+    public OfflinePlayer getBuyer() {
+        return buyer;
     }
 
     public CategoryType getCategory() {

@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class BuyGUI implements CustomInventory {
@@ -102,6 +103,8 @@ public class BuyGUI implements CustomInventory {
                     return;
                 }
                 instance.getDatabaseManager().getRequestSender().deleteAuctionItem(auctionItem);
+                auctionItem.setBuyer(player);
+
                 player.getInventory().addItem(auctionItem.getItem());
                 economy.withdrawPlayer(player, auctionItem.getPrice());
                 economy.depositPlayer(auctionItem.getSeller(), auctionItem.getPrice());
@@ -113,6 +116,12 @@ public class BuyGUI implements CustomInventory {
                     Player target = (Player) auctionItem.getSeller();
                     target.sendMessage(String.format(MessageManager.PAYMENT_RECEIVED.getMessage(), player.getName(), auctionItem.getPrice()));
                     target.playSound(target, Sound.BLOCK_NOTE_BLOCK_HARP, 1, 5);
+                } else {
+                    if (instance.getAuctionHandler().offlinePlayerSoldItems.containsKey(auctionItem.getSeller())) {
+                        instance.getAuctionHandler().offlinePlayerSoldItems.get(auctionItem.getSeller()).add(auctionItem);
+                    } else {
+                        instance.getAuctionHandler().offlinePlayerSoldItems.put(auctionItem.getSeller(), List.of(auctionItem));
+                    }
                 }
             }
         }

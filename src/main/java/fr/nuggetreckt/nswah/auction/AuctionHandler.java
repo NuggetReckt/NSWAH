@@ -1,6 +1,7 @@
 package fr.nuggetreckt.nswah.auction;
 
 import fr.nuggetreckt.nswah.AuctionHouse;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
@@ -18,10 +19,12 @@ public class AuctionHandler {
     private final AuctionHouse instance;
 
     public final HashMap<Player, SortType> sortTypeMap;
+    public final HashMap<OfflinePlayer, List<AuctionItem>> offlinePlayerSoldItems;
 
     public AuctionHandler(AuctionHouse instance) {
         this.instance = instance;
         this.sortTypeMap = new HashMap<>();
+        this.offlinePlayerSoldItems = new HashMap<>();
     }
 
     public List<AuctionItem> getAuctionItems(Player player) {
