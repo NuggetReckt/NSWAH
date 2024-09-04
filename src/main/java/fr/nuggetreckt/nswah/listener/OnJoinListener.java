@@ -6,6 +6,7 @@ import fr.nuggetreckt.nswah.auction.AuctionItem;
 import fr.nuggetreckt.nswah.util.MessageManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +19,7 @@ public class OnJoinListener implements Listener {
         this.instance = instance;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
         Player player = event.getPlayer();
         AuctionHandler auctionHandler = instance.getAuctionHandler();

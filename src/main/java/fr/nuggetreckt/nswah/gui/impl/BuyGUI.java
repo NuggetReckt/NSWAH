@@ -13,6 +13,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Supplier;
@@ -120,7 +121,10 @@ public class BuyGUI implements CustomInventory {
                     if (instance.getAuctionHandler().offlinePlayerSoldItems.containsKey(auctionItem.getSeller())) {
                         instance.getAuctionHandler().offlinePlayerSoldItems.get(auctionItem.getSeller()).add(auctionItem);
                     } else {
-                        instance.getAuctionHandler().offlinePlayerSoldItems.put(auctionItem.getSeller(), List.of(auctionItem));
+                        List<AuctionItem> items = new ArrayList<>();
+
+                        items.add(auctionItem);
+                        instance.getAuctionHandler().offlinePlayerSoldItems.put(auctionItem.getSeller(), items);
                     }
                 }
             }
