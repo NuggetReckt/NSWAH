@@ -4,7 +4,7 @@ author: NuggetReckt
 prefix: AuctionHouse
 website: https://play.noskillworld.fr
 main: fr.nuggetreckt.nswah.AuctionHouse
-api-version: 1.20
+api-version: 1.21
 depend: [Vault]
 commands:
   hdv:

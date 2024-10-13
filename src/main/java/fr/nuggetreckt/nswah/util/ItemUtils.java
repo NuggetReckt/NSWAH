@@ -146,7 +146,7 @@ public class ItemUtils {
 
     public ItemUtils glow() {
         ItemMeta meta = is.getItemMeta();
-        meta.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
+        meta.addEnchant(Enchantment.POWER, 1, true);
         hideFlags();
         return this;
     }
