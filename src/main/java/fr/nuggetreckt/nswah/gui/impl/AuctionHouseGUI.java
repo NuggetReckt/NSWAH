@@ -92,66 +92,67 @@ public class AuctionHouseGUI implements CustomInventory {
 
     @Override
     public void onClick(Player player, Inventory inventory, @NotNull ItemStack clickedItem, int slot, boolean isLeftClick) {
-        switch (clickedItem.getType()) {
-            case BARRIER -> {
-                player.closeInventory();
-                player.playSound(player, Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, 1, 1);
-            }
-            case SNOWBALL -> {
-                instance.getGuiManager().refresh(player, this.getClass());
-                player.playSound(player, Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, 1, 1);
-            }
-            case HOPPER -> {
-                instance.getAuctionHandler().toggleTypeSort(player);
-                instance.getGuiManager().refresh(player, this.getClass());
-                player.playSound(player, Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, 1, 1);
-            }
-            case SUNFLOWER -> {
-                player.closeInventory();
-                player.playSound(player, Sound.ITEM_BOOK_PAGE_TURN, 1, 1);
-                instance.getGuiManager().open(player, SellGUI.class);
-            }
-            case NETHER_STAR -> {
-                player.closeInventory();
-                player.playSound(player, Sound.ITEM_BOOK_PAGE_TURN, 1, 1);
-                instance.getGuiManager().open(player, SoldItemsGUI.class);
-            }
-            case ARROW -> {
-                int newPage = currentPage.get(player);
-
-                if (Objects.requireNonNull(clickedItem.getItemMeta()).getDisplayName().contains("suivante")) {
-                    newPage = newPage + 1;
-                } else {
-                    newPage = newPage - 1;
+        if (slot >= this.getSlots() - 9) {
+            switch (clickedItem.getType()) {
+                case BARRIER -> {
+                    player.closeInventory();
+                    player.playSound(player, Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, 1, 1);
                 }
-                setCurrentPage(player, newPage, true);
-                instance.getGuiManager().refresh(player, this.getClass());
-                player.playSound(player, Sound.ITEM_BOOK_PAGE_TURN, 1, 1);
-            }
-            case LANTERN -> {
-            }
-            default -> {
-                if (!isClickable(clickedItem)) return;
-                if (player.getInventory().equals(inventory)) return;
-
-                AuctionItem auctionItem = auctionItems.get(slot);
-                ItemMeta meta = auctionItem.getItem().getItemMeta();
-                BuyGUI buyGUI = (BuyGUI) instance.getGuiManager().registeredMenus.get(BuyGUI.class);
-                EditGUI editGUI = (EditGUI) instance.getGuiManager().registeredMenus.get(EditGUI.class);
-
-                assert meta != null;
-                meta.setLore(null);
-                auctionItem.getItem().setItemMeta(meta);
-                player.playSound(player, Sound.ITEM_BOOK_PAGE_TURN, 1, 1);
-                if (Objects.requireNonNull(auctionItem.getSeller().getName()).equalsIgnoreCase(player.getName())) {
-                    editGUI.selectedItem.put(player, auctionItem);
-                    instance.getGuiManager().open(player, EditGUI.class);
-                    return;
+                case SNOWBALL -> {
+                    instance.getGuiManager().refresh(player, this.getClass());
+                    player.playSound(player, Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, 1, 1);
                 }
-                buyGUI.selectedItem.put(player, auctionItem);
-                instance.getGuiManager().open(player, BuyGUI.class);
+                case HOPPER -> {
+                    instance.getAuctionHandler().toggleTypeSort(player);
+                    instance.getGuiManager().refresh(player, this.getClass());
+                    player.playSound(player, Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, 1, 1);
+                }
+                case SUNFLOWER -> {
+                    player.closeInventory();
+                    player.playSound(player, Sound.ITEM_BOOK_PAGE_TURN, 1, 1);
+                    instance.getGuiManager().open(player, SellGUI.class);
+                }
+                case NETHER_STAR -> {
+                    player.closeInventory();
+                    player.playSound(player, Sound.ITEM_BOOK_PAGE_TURN, 1, 1);
+                    instance.getGuiManager().open(player, SoldItemsGUI.class);
+                }
+                case ARROW -> {
+                    int newPage = currentPage.get(player);
+
+                    if (Objects.requireNonNull(clickedItem.getItemMeta()).getDisplayName().contains("suivante")) {
+                        newPage = newPage + 1;
+                    } else {
+                        newPage = newPage - 1;
+                    }
+                    setCurrentPage(player, newPage, true);
+                    instance.getGuiManager().refresh(player, this.getClass());
+                    player.playSound(player, Sound.ITEM_BOOK_PAGE_TURN, 1, 1);
+                }
+                case LANTERN -> {
+                }
             }
+            return;
         }
+        if (!isClickable(clickedItem)) return;
+        if (player.getInventory().equals(inventory)) return;
+
+        AuctionItem auctionItem = auctionItems.get(slot);
+        ItemMeta meta = auctionItem.getItem().getItemMeta();
+        BuyGUI buyGUI = (BuyGUI) instance.getGuiManager().registeredMenus.get(BuyGUI.class);
+        EditGUI editGUI = (EditGUI) instance.getGuiManager().registeredMenus.get(EditGUI.class);
+
+        assert meta != null;
+        meta.setLore(null);
+        auctionItem.getItem().setItemMeta(meta);
+        player.playSound(player, Sound.ITEM_BOOK_PAGE_TURN, 1, 1);
+        if (Objects.requireNonNull(auctionItem.getSeller().getName()).equalsIgnoreCase(player.getName())) {
+            editGUI.selectedItem.put(player, auctionItem);
+            instance.getGuiManager().open(player, EditGUI.class);
+            return;
+        }
+        buyGUI.selectedItem.put(player, auctionItem);
+        instance.getGuiManager().open(player, BuyGUI.class);
     }
 
     private boolean isClickable(@NotNull ItemStack clickedItem) {
